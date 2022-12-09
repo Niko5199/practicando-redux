@@ -1,31 +1,26 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import apiCall from "../api";
 import MealItem from "../components/MealItem";
-import { fetchRecipes } from "../redux/actions/results";
+import { addSearchItem, fetchRecipes } from "../redux/actions/results";
+import {
+  errorResults,
+  isLoadingResults,
+  searchResult,
+} from "../redux/selectors";
 
 const Index = () => {
   const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const searchResults = useSelector(searchResult);
+  const isLoading = useSelector(isLoadingResults);
+  const error = useSelector(errorResults);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSearchClick = async () => {
-    try {
-      setIsLoading(true);
-      dispatch(fetchRecipes(searchText));
-
-      const response = await apiCall(`/search.php?s=${searchText}`);
-      setSearchResults(response?.meals);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
+    dispatch(addSearchItem(searchText));
+    dispatch(fetchRecipes(searchText));
   };
 
   const handleMealClick = (id) => {
@@ -55,7 +50,9 @@ const Index = () => {
         </div>
 
         {isLoading && <h6 className="mt-8">Cargando...</h6>}
-        {error && <h6 className="text-red-500 mt-2">Ha ocurrido un error</h6>}
+        {Object.keys(error)?.length > 0 && (
+          <h6 className="text-red-500 mt-2">Ha ocurrido un error</h6>
+        )}
         <div className="flex flex-row flex-wrap my-8 justify-center">
           {!isLoading &&
             searchResults?.map((meal) => (

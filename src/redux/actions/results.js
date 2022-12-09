@@ -26,6 +26,7 @@ export const fetchRecipes = (text) => async (dispatch) => {
     const response = await apiCall(`/search.php?s=${text}`);
     dispatch(fetchRecipesComplete(response?.meals));
   } catch (error) {
+    console.log(error);
     dispatch(fetchRecipesError(error));
   }
 };

@@ -13,6 +13,7 @@ const initialState = {
 };
 
 const resultsReducer = (state = initialState, action) => {
+  console.log("Payload", action.payload);
   switch (action.type) {
     case FETCH_RECIPES_START:
       return { ...state, isLoading: true }; // Esto proboca que haya rendereos es como asignar con el setState la informacion
